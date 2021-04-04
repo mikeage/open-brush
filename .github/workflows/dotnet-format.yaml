@@ -1,4 +1,4 @@
-name: Check dotnet-format syntax
+name: dotnet-format
 on: pull_request
 jobs:
   dotnet-format:
