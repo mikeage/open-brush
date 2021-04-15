@@ -18,8 +18,10 @@ using UnityEditor;
 using UnityEngine;
 
 
-namespace TiltBrush {
-public static class SpoofMobileHardware {
+namespace TiltBrush
+{
+    public static class SpoofMobileHardware
+    {
 #if UNITY_EDITOR
   private const string kSpoofMobileHardware = "Tilt/Spoof Mobile Hardware";
 
@@ -40,9 +42,9 @@ public static class SpoofMobileHardware {
   }
 
 #else
-  public static bool MobileHardware { get { return false; } }
+        public static bool MobileHardware { get { return false; } }
 #endif
 
-}
+    }
 } // namespace TiltBrush
 

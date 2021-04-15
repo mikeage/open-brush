@@ -21,7 +21,8 @@ using UnityEditor;
 #endif
 using UObject = UnityEngine.Object;
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
 #if UNITY_EDITOR
 public class SceneSurgery : EditorWindow {

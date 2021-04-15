@@ -18,7 +18,8 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(PowerRangeAttribute))]
@@ -74,23 +75,26 @@ public class PowerRangeDrawer : PropertyDrawer {
 }
 #endif
 
-/// <summary>
-/// Not a true logarithmic range the way I'd like it; this just re-uses some internal
-/// but hidden Unity functionality.
-/// </summary>
-[AttributeUsage(AttributeTargets.Field)]
-public class PowerRangeAttribute : PropertyAttribute {
-  public readonly float min;
-  public readonly float max;
-  public readonly float power;
-  public PowerRangeAttribute(float min = 1e-3f, float max = 1e3f, float power = 2f) {
-    if (min <= 0) {
-      min = 1e-4f;
+    /// <summary>
+    /// Not a true logarithmic range the way I'd like it; this just re-uses some internal
+    /// but hidden Unity functionality.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field)]
+    public class PowerRangeAttribute : PropertyAttribute
+    {
+        public readonly float min;
+        public readonly float max;
+        public readonly float power;
+        public PowerRangeAttribute(float min = 1e-3f, float max = 1e3f, float power = 2f)
+        {
+            if (min <= 0)
+            {
+                min = 1e-4f;
+            }
+            this.min = min;
+            this.max = max;
+            this.power = power;
+        }
     }
-    this.min = min;
-    this.max = max;
-    this.power = power;
-  }
-}
 
 }  // namespace TiltBrush

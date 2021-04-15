@@ -17,7 +17,8 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
 #if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(Vec2AsRangeAttribute))]
@@ -76,18 +77,20 @@ public class Vec2AsRange : PropertyDrawer {
 }
 #endif
 
-/// Use this attribute on vec2 members to display them in the inspector
-/// as an optional range slider + 2 float fields.
-public class Vec2AsRangeAttribute : PropertyAttribute {
-  public bool Slider { get; set; }
-  public bool HideMax { get; set; }
-  public float LowerBound { get; set; }
-  public float UpperBound { get; set; }
-  public Vec2AsRangeAttribute() {
-    Slider = true;
-    HideMax = false;
-    LowerBound = float.MinValue;
-    UpperBound = float.MaxValue;
-  }
-}
+    /// Use this attribute on vec2 members to display them in the inspector
+    /// as an optional range slider + 2 float fields.
+    public class Vec2AsRangeAttribute : PropertyAttribute
+    {
+        public bool Slider { get; set; }
+        public bool HideMax { get; set; }
+        public float LowerBound { get; set; }
+        public float UpperBound { get; set; }
+        public Vec2AsRangeAttribute()
+        {
+            Slider = true;
+            HideMax = false;
+            LowerBound = float.MinValue;
+            UpperBound = float.MaxValue;
+        }
+    }
 }  // namespace TiltBrush

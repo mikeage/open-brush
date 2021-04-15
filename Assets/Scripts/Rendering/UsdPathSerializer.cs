@@ -20,10 +20,12 @@ using USD.NET.Unity;
 using Unity.Formats.USD;
 #endif
 
-namespace TiltBrush {
-/// Used for writing the path a transform takes to a path, in USD format.
-/// Relative to the scene transform
-public class UsdPathSerializer : MonoBehaviour {
+namespace TiltBrush
+{
+    /// Used for writing the path a transform takes to a path, in USD format.
+    /// Relative to the scene transform
+    public class UsdPathSerializer : MonoBehaviour
+    {
 #if USD_SUPPORTED
   [System.Serializable]
   class UsdCameraSample : CameraSample {
@@ -227,5 +229,5 @@ public class UsdPathSerializer : MonoBehaviour {
     m_Scene.Write(m_xformName, m_UsdCamera);
   }
 #endif
-}
+    }
 } // namespace TiltBrush

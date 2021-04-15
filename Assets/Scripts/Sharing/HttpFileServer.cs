@@ -23,115 +23,138 @@ using System.IO;
 using UnityEditor;
 #endif // UNITY_EDITOR
 
-namespace TiltBrush {
-/// Serves a defined set of files from the app webserver. For security reasons all the files that
-/// can be served are predefined - this reduces the chance of an exploit from someone creating a
-/// cunningly-crafted Url.
-/// All files are held on disk as TextAssets - this is fine for .html, .txt etc, but for images and
-/// other binary files, they have to have the .bytes extension added. This makes them a little
-/// awkward to work with.
-/// Therefore, the idea with this class is that you will have a folder outside of Assets/ in which
-/// you author the files. There is a 'Refresh Files' context menu command that you can run which
-/// will copy all those files into a specified folder in the Assets folder hierarchy, while at the
-/// same time setting up an entry in the file table for that file.
-/// It is not intended that the m_Entries table should be hand-authored.
-public class HttpFileServer : MonoBehaviour {
-  [Serializable]
-  public class HttpFileEntry {
-    public TextAsset Asset;
-    public string Path;
-    public bool Binary;
-    public string ContentType;
-    private byte[] m_Bytes;
-    private string m_Text;
+namespace TiltBrush
+{
+    /// Serves a defined set of files from the app webserver. For security reasons all the files that
+    /// can be served are predefined - this reduces the chance of an exploit from someone creating a
+    /// cunningly-crafted Url.
+    /// All files are held on disk as TextAssets - this is fine for .html, .txt etc, but for images and
+    /// other binary files, they have to have the .bytes extension added. This makes them a little
+    /// awkward to work with.
+    /// Therefore, the idea with this class is that you will have a folder outside of Assets/ in which
+    /// you author the files. There is a 'Refresh Files' context menu command that you can run which
+    /// will copy all those files into a specified folder in the Assets folder hierarchy, while at the
+    /// same time setting up an entry in the file table for that file.
+    /// It is not intended that the m_Entries table should be hand-authored.
+    public class HttpFileServer : MonoBehaviour
+    {
+        [Serializable]
+        public class HttpFileEntry
+        {
+            public TextAsset Asset;
+            public string Path;
+            public bool Binary;
+            public string ContentType;
+            private byte[] m_Bytes;
+            private string m_Text;
 
-    public byte[] Bytes {
-      get {
-        Debug.Assert(Binary);
-        return m_Bytes;
-      }
-    }
-    public string Text {
-      get {
-        Debug.Assert(!Binary);
-        return m_Text;
-      }
-    }
+            public byte[] Bytes
+            {
+                get
+                {
+                    Debug.Assert(Binary);
+                    return m_Bytes;
+                }
+            }
+            public string Text
+            {
+                get
+                {
+                    Debug.Assert(!Binary);
+                    return m_Text;
+                }
+            }
 
-    public void Initialize() {
-      if (Binary) {
-        m_Bytes = Asset.bytes;
-      } else {
-        m_Text = Asset.text;
-      }
-    }
-  }
+            public void Initialize()
+            {
+                if (Binary)
+                {
+                    m_Bytes = Asset.bytes;
+                }
+                else
+                {
+                    m_Text = Asset.text;
+                }
+            }
+        }
 
-  [Header("Should start with / and is the path to serve from.")]
-  [SerializeField] private string m_PathPrefix;
-  [Header("Source folder containing files to serve. Should be outside of /Assets folder.")]
-  [SerializeField] private string m_SourceFilesPath;
-  [Header("Destination folder inside /Assets that files are copied to.")]
-  [SerializeField] private string m_DestinationAssetPath;
-  [Header("Files to serve. Use the context menu to refresh these.")]
-  [SerializeField] private HttpFileEntry[] m_Entries;
+        [Header("Should start with / and is the path to serve from.")]
+        [SerializeField] private string m_PathPrefix;
+        [Header("Source folder containing files to serve. Should be outside of /Assets folder.")]
+        [SerializeField] private string m_SourceFilesPath;
+        [Header("Destination folder inside /Assets that files are copied to.")]
+        [SerializeField] private string m_DestinationAssetPath;
+        [Header("Files to serve. Use the context menu to refresh these.")]
+        [SerializeField] private HttpFileEntry[] m_Entries;
 
-  private Dictionary<string, string> m_Substitutions;
+        private Dictionary<string, string> m_Substitutions;
 
-  public void OnEnable() {
-    if (m_Substitutions == null) {
-      m_Substitutions = new Dictionary<string, string>();
-      foreach (var entry in m_Entries) {
-        entry.Initialize();
-      }
-    }
-    App.HttpServer.AddHttpHandler(m_PathPrefix, ReturnFile);
-  }
+        public void OnEnable()
+        {
+            if (m_Substitutions == null)
+            {
+                m_Substitutions = new Dictionary<string, string>();
+                foreach (var entry in m_Entries)
+                {
+                    entry.Initialize();
+                }
+            }
+            App.HttpServer.AddHttpHandler(m_PathPrefix, ReturnFile);
+        }
 
-  public void OnDisable() {
-    App.HttpServer.RemoveHttpHandler(m_PathPrefix);
-  }
+        public void OnDisable()
+        {
+            App.HttpServer.RemoveHttpHandler(m_PathPrefix);
+        }
 
-  /// Substitute 'from' with 'to' in text files.
-  public void AddSubstitution(string from, string to) {
-    m_Substitutions[from] = to;
-  }
+        /// Substitute 'from' with 'to' in text files.
+        public void AddSubstitution(string from, string to)
+        {
+            m_Substitutions[from] = to;
+        }
 
-  /// remove the given substitution.
-  public void RemoveSubstitution(string from) {
-    m_Substitutions.Remove(from);
-  }
+        /// remove the given substitution.
+        public void RemoveSubstitution(string from)
+        {
+            m_Substitutions.Remove(from);
+        }
 
-  private void ReturnFile(HttpListenerContext context) {
-    string subPath = context.Request.Url.LocalPath.Substring(m_PathPrefix.Length + 1);
-    var entry = m_Entries.FirstOrDefault(x => x.Path == subPath);
-    if (entry == null) {
-      context.Response.StatusCode = (int) HttpStatusCode.NotFound;
-      return;
-    }
+        private void ReturnFile(HttpListenerContext context)
+        {
+            string subPath = context.Request.Url.LocalPath.Substring(m_PathPrefix.Length + 1);
+            var entry = m_Entries.FirstOrDefault(x => x.Path == subPath);
+            if (entry == null)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return;
+            }
 
-    byte[] bytes;
-    if (entry.Binary) {
-      context.Response.ContentEncoding = Encoding.Default;
-      bytes = entry.Bytes;
-    } else {
-      context.Response.ContentEncoding = Encoding.UTF8;
-      string text = entry.Text;
-      foreach (var substitution in m_Substitutions) {
-        text = text.Replace(substitution.Key, substitution.Value);
-      }
+            byte[] bytes;
+            if (entry.Binary)
+            {
+                context.Response.ContentEncoding = Encoding.Default;
+                bytes = entry.Bytes;
+            }
+            else
+            {
+                context.Response.ContentEncoding = Encoding.UTF8;
+                string text = entry.Text;
+                foreach (var substitution in m_Substitutions)
+                {
+                    text = text.Replace(substitution.Key, substitution.Value);
+                }
 
-      bytes = Encoding.UTF8.GetBytes(text);
-    }
+                bytes = Encoding.UTF8.GetBytes(text);
+            }
 
-    context.Response.ContentType = entry.ContentType;
-    context.Response.ContentLength64 = bytes.Length;
-    context.Response.OutputStream.Write(bytes, 0, bytes.Length);
-  }
+            context.Response.ContentType = entry.ContentType;
+            context.Response.ContentLength64 = bytes.Length;
+            context.Response.OutputStream.Write(bytes, 0, bytes.Length);
+        }
 
-  /// Below are a set of Unity Editor methods to help set up the HttpFileServer object and its
-  /// set of file entries that it can serve.
-#region EditorFunctions
+        /// Below are a set of Unity Editor methods to help set up the HttpFileServer object and its
+        /// set of file entries that it can serve.
+        #region EditorFunctions
 #if UNITY_EDITOR
   [ContextMenu("Select Paths")]
   private void SelectPaths() {
@@ -224,6 +247,6 @@ public class HttpFileServer : MonoBehaviour {
     return Path.Combine(normalizedProject, path);
   }
 #endif // UNITY_EDITOR
-#endregion
-}
+        #endregion
+    }
 } // namespace TiltBrush

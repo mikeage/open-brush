@@ -15,14 +15,16 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace TiltBrush {
-public class ColorTable : MonoBehaviour {
-  [SerializeField] private float m_SecretDistance = 1.0f;
+namespace TiltBrush
+{
+    public class ColorTable : MonoBehaviour
+    {
+        [SerializeField] private float m_SecretDistance = 1.0f;
 
-  // From http://samples.msdn.microsoft.com/workshop/samples/author/dhtml/colors/ColorTable.htm
-  // Some names changed to paint-based description for clarity, string length, and to remove
-  // a surprising amount of insensitive names.
-  private Dictionary<Color32, string> m_Colors = new Dictionary<Color32, string> {
+        // From http://samples.msdn.microsoft.com/workshop/samples/author/dhtml/colors/ColorTable.htm
+        // Some names changed to paint-based description for clarity, string length, and to remove
+        // a surprising amount of insensitive names.
+        private Dictionary<Color32, string> m_Colors = new Dictionary<Color32, string> {
     { new Color32(240, 248, 255, 255), "Cool White" },
     { new Color32(250, 235, 215, 255), "Antique White" },
     { new Color32(127, 255, 212, 255), "Light Cyan" },
@@ -163,7 +165,7 @@ public class ColorTable : MonoBehaviour {
     { new Color32(201, 104, 0, 255), "Orange" },
   };
 
-  private Dictionary<Color32, string> m_SecretColors = new Dictionary<Color32, string> {
+        private Dictionary<Color32, string> m_SecretColors = new Dictionary<Color32, string> {
     { new Color32(27, 15, 253, 255), "Patrick's Favorite Color" },
     { new Color32(72, 9, 12, 255), "Mach's Favorite Color" },
     { new Color32(126, 71, 143, 255), "Joyce's Favorite Color" },
@@ -180,42 +182,49 @@ public class ColorTable : MonoBehaviour {
     { new Color32(11, 28, 92, 255), "Coco's Favorite Color" },
   };
 
-  public static ColorTable m_Instance;
+        public static ColorTable m_Instance;
 
-  float ColorDistance(Color32 colorA, Color32 colorB) {
-    // From https://en.wikipedia.org/wiki/Color_difference
-    float deltaR = (float)(colorA.r - colorB.r);
-    float deltaG = (float)(colorA.g - colorB.g);
-    float deltaB = (float)(colorA.b - colorB.b);
-    float avgR = (float)(colorA.r + colorB.r) / 2.0f;
-    float r = (2.0f + avgR / 256.0f) * deltaR * deltaR;
-    float g = 4.0f * deltaG * deltaG;
-    float b = (2.0f + (255.0f - avgR) / 256.0f) * deltaB * deltaB;
-    return Mathf.Sqrt(r + g + b);
-  }
+        float ColorDistance(Color32 colorA, Color32 colorB)
+        {
+            // From https://en.wikipedia.org/wiki/Color_difference
+            float deltaR = (float)(colorA.r - colorB.r);
+            float deltaG = (float)(colorA.g - colorB.g);
+            float deltaB = (float)(colorA.b - colorB.b);
+            float avgR = (float)(colorA.r + colorB.r) / 2.0f;
+            float r = (2.0f + avgR / 256.0f) * deltaR * deltaR;
+            float g = 4.0f * deltaG * deltaG;
+            float b = (2.0f + (255.0f - avgR) / 256.0f) * deltaB * deltaB;
+            return Mathf.Sqrt(r + g + b);
+        }
 
-  void Awake() {
-    m_Instance = this;
-  }
+        void Awake()
+        {
+            m_Instance = this;
+        }
 
-  public string NearestColorTo(Color color) {
-    float dist = float.MaxValue;
-    Color32? nearestColor = null;
-    foreach (var col in m_SecretColors.Keys) {
-      float newDist = ColorDistance(col, color);
-      if (newDist < m_SecretDistance) {
-        return m_SecretColors[col];
-      }
+        public string NearestColorTo(Color color)
+        {
+            float dist = float.MaxValue;
+            Color32? nearestColor = null;
+            foreach (var col in m_SecretColors.Keys)
+            {
+                float newDist = ColorDistance(col, color);
+                if (newDist < m_SecretDistance)
+                {
+                    return m_SecretColors[col];
+                }
+            }
+
+            foreach (var col in m_Colors.Keys)
+            {
+                float newDist = ColorDistance(col, color);
+                if (newDist < dist)
+                {
+                    dist = newDist;
+                    nearestColor = col;
+                }
+            }
+            return m_Colors[nearestColor.Value];
+        }
     }
-
-    foreach (var col in m_Colors.Keys) {
-      float newDist = ColorDistance(col, color);
-      if (newDist < dist) {
-        dist = newDist;
-        nearestColor = col;
-      }
-    }
-    return m_Colors[nearestColor.Value];
-  }
-}
 } // namespace TiltBrush

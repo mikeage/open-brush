@@ -29,7 +29,7 @@ static class ExportUsd {
   // Serialization Classes
   // -------------------------------------------------------------------------------------------- //
 
-  #region "Geometry Classes for Serialization"
+#region "Geometry Classes for Serialization"
 
   /// The root / sketch metadata for the file.
   [Serializable]
@@ -103,9 +103,9 @@ static class ExportUsd {
     public float[] pressures;
   }
 
-  #endregion
+#endregion
 
-  #region "Material Classes for Serialization"
+#region "Material Classes for Serialization"
 
   [Serializable]
   [UsedImplicitly(ImplicitUseTargetFlags.Members)]
@@ -202,7 +202,7 @@ static class ExportUsd {
     }
   }
 
-  #endregion
+#endregion
 
   // -------------------------------------------------------------------------------------------- //
   // Conversion Helpers

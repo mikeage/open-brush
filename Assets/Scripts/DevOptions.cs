@@ -41,31 +41,34 @@ using System.IO;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
-[Serializable]
-public enum TiltFormat { Directory, Inherit, Zip };
+    [Serializable]
+    public enum TiltFormat { Directory, Inherit, Zip };
 
-// This class awakens before all our other script classes, so it is
-// safe for it to override values that have been serialized into the scene.
-public class DevOptions : MonoBehaviour {
-  const string OPTIONS_FILE_NAME = "../DevOptions.json";
-  static public DevOptions I = null;
+    // This class awakens before all our other script classes, so it is
+    // safe for it to override values that have been serialized into the scene.
+    public class DevOptions : MonoBehaviour
+    {
+        const string OPTIONS_FILE_NAME = "../DevOptions.json";
+        static public DevOptions I = null;
 
-  public bool BufferBeforeZip = false;
-  public bool BufferAfterZip = false;
-  public bool ResaveLegacyScenes = true;
-  public bool UseAutoProfiler = false;
-  public bool AllowStripBreak = true;
-  public TiltFormat PreferredTiltFormat = TiltFormat.Inherit;
-  public PointerScript.BrushLerp BrushLerp = PointerScript.BrushLerp.Default;
+        public bool BufferBeforeZip = false;
+        public bool BufferAfterZip = false;
+        public bool ResaveLegacyScenes = true;
+        public bool UseAutoProfiler = false;
+        public bool AllowStripBreak = true;
+        public TiltFormat PreferredTiltFormat = TiltFormat.Inherit;
+        public PointerScript.BrushLerp BrushLerp = PointerScript.BrushLerp.Default;
 
-  public void Awake() {
-    DevOptions.I = this;
+        public void Awake()
+        {
+            DevOptions.I = this;
 #if ALLOW_EXTERNAL_CFG_FILE
     Load();
 #endif
-  }
+        }
 
 #if ALLOW_EXTERNAL_CFG_FILE
   private void Load(JObject obj) {
@@ -132,5 +135,5 @@ public class DevOptions : MonoBehaviour {
   }
 
 #endif // ALLOW_EXTERNAL_CFG_FILE
-}
+    }
 }  // namespace TiltBrush

@@ -15,10 +15,11 @@
 using System.IO;
 using UnityEngine;
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
-// This can't be defined in an Editor/ directory because it needs to be accessible by
-// BrushDescriptor. It's still only used at build time.
+    // This can't be defined in an Editor/ directory because it needs to be accessible by
+    // BrushDescriptor. It's still only used at build time.
 #if UNITY_EDITOR
 public struct CopyRequest {
   public string source;

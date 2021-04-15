@@ -19,12 +19,14 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
-/// Used to store references to assets that we only need at edit or build time.
-/// These things could be dumped into Config (ie, Main.unity) but then Unity
-/// would bundle the data into builds, load it at runtime, etc.
-public class EditTimeAssetReferences : ScriptableObject {
+    /// Used to store references to assets that we only need at edit or build time.
+    /// These things could be dumped into Config (ie, Main.unity) but then Unity
+    /// would bundle the data into builds, load it at runtime, etc.
+    public class EditTimeAssetReferences : ScriptableObject
+    {
 #if UNITY_EDITOR
   private static EditTimeAssetReferences sm_instance = null;
   public static EditTimeAssetReferences Instance {
@@ -38,11 +40,11 @@ public class EditTimeAssetReferences : ScriptableObject {
   }
 #endif
 
-  // Probably we won't ever need more than these two pieces of data; any other
-  // per-platform asset references can go into PlatformConfig.
+        // Probably we won't ever need more than these two pieces of data; any other
+        // per-platform asset references can go into PlatformConfig.
 
-  public PlatformConfig m_PlatformConfigMobile;
-  public PlatformConfig m_PlatformConfigPc;
+        public PlatformConfig m_PlatformConfigMobile;
+        public PlatformConfig m_PlatformConfigPc;
 
 #if UNITY_EDITOR
   public PlatformConfig GetConfigForBuildTarget(BuildTarget target) {
@@ -61,6 +63,6 @@ public class EditTimeAssetReferences : ScriptableObject {
     }
   }
 #endif
-}
+    }
 
 } // namespace TiltBrush

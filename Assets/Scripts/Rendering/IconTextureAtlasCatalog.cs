@@ -20,35 +20,39 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace TiltBrush {
-  /// Stores the details of a texture atlas so that it can be generated offline.
-  [CreateAssetMenu(fileName = "AtlasCatalog", menuName = "Atlas Catalog", order = 1)]
-  public class IconTextureAtlasCatalog : ScriptableObject {
+namespace TiltBrush
+{
+    /// Stores the details of a texture atlas so that it can be generated offline.
+    [CreateAssetMenu(fileName = "AtlasCatalog", menuName = "Atlas Catalog", order = 1)]
+    public class IconTextureAtlasCatalog : ScriptableObject
+    {
 
-    [System.Serializable]
-    public class TextureEntry {
-      public Texture2D m_texture;
-      public Rect m_rect;
-    }
+        [System.Serializable]
+        public class TextureEntry
+        {
+            public Texture2D m_texture;
+            public Rect m_rect;
+        }
 
-    [SerializeField] private TiltBrushManifest[] m_brushManifests;
-    [SerializeField] private Texture2D m_Atlas;
+        [SerializeField] private TiltBrushManifest[] m_brushManifests;
+        [SerializeField] private Texture2D m_Atlas;
 #pragma warning disable 414
-    [SerializeField] private int m_AtlasSize = 2048;
-    [Tooltip("Set <= 0 to disable.")]
-    [SerializeField] private int m_VerifyTextureSize = 128;
+        [SerializeField] private int m_AtlasSize = 2048;
+        [Tooltip("Set <= 0 to disable.")]
+        [SerializeField] private int m_VerifyTextureSize = 128;
 #pragma warning restore 414
-    [SerializeField] private string[] m_paths;
-    [SerializeField] private TextureEntry[] m_entries;
-    [SerializeField] private int m_padding = 8;
+        [SerializeField] private string[] m_paths;
+        [SerializeField] private TextureEntry[] m_entries;
+        [SerializeField] private int m_padding = 8;
 
-    public Texture2D Atlas { get { return m_Atlas; } }
-    public int Padding { get { return m_padding; } }
-    public int Length { get { return m_entries.Length; } }
+        public Texture2D Atlas { get { return m_Atlas; } }
+        public int Padding { get { return m_padding; } }
+        public int Length { get { return m_entries.Length; } }
 
-    public TextureEntry this[int key] {
-      get { return m_entries[key]; }
-    }
+        public TextureEntry this[int key]
+        {
+            get { return m_entries[key]; }
+        }
 
 #if UNITY_EDITOR
     static IEnumerable<T> IterAssets<T>(string query=null, string[] folders=null)
@@ -178,5 +182,5 @@ namespace TiltBrush {
       EditorUtility.DisplayProgressBar("Icon Texture Atlas Catalog", action, p);
     }
 #endif
-  }
+    }
 } // namespace TiltBrush

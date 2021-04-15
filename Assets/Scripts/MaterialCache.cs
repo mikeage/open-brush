@@ -15,26 +15,31 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace TiltBrush {
+namespace TiltBrush
+{
 
-// This class is used by the ControllerMaterialCatalog to create a mapping between catalog
-// materials and instanced versions of those materials.  If a material is assigned to a
-// renderer from the catalog and then altered, it is instanced.  This ensures only a single
-// material is assigned per renderer.
-public class MaterialCache : MonoBehaviour {
-  private Renderer m_SiblingRenderer;
-  private Dictionary<Material, Material> m_CachedMaterialMap;
+    // This class is used by the ControllerMaterialCatalog to create a mapping between catalog
+    // materials and instanced versions of those materials.  If a material is assigned to a
+    // renderer from the catalog and then altered, it is instanced.  This ensures only a single
+    // material is assigned per renderer.
+    public class MaterialCache : MonoBehaviour
+    {
+        private Renderer m_SiblingRenderer;
+        private Dictionary<Material, Material> m_CachedMaterialMap;
 
-  void Awake() {
-    m_CachedMaterialMap = new Dictionary<Material, Material>(new ReferenceComparer<Material>());
-    m_SiblingRenderer = GetComponent<Renderer>();
-  }
+        void Awake()
+        {
+            m_CachedMaterialMap = new Dictionary<Material, Material>(new ReferenceComparer<Material>());
+            m_SiblingRenderer = GetComponent<Renderer>();
+        }
 
-  public void AssignMaterial(Material mat) {
-    // Get mat from dictionary.
-    if (!m_CachedMaterialMap.ContainsKey(mat)) {
-      // If it doesn't, clone and add.
-      m_SiblingRenderer.material = mat;
+        public void AssignMaterial(Material mat)
+        {
+            // Get mat from dictionary.
+            if (!m_CachedMaterialMap.ContainsKey(mat))
+            {
+                // If it doesn't, clone and add.
+                m_SiblingRenderer.material = mat;
 
 #if UNITY_EDITOR
       // Debug check to verify the material being cached is not dynamically generated.
@@ -45,10 +50,10 @@ public class MaterialCache : MonoBehaviour {
         Debug.LogError("Generated material used as a key to the MaterialCache dictionary.");
       }
 #endif
-      m_CachedMaterialMap.Add(mat, m_SiblingRenderer.material);
+                m_CachedMaterialMap.Add(mat, m_SiblingRenderer.material);
+            }
+            m_SiblingRenderer.material = m_CachedMaterialMap[mat];
+        }
     }
-    m_SiblingRenderer.material = m_CachedMaterialMap[mat];
-  }
-}
 
 } // namespace TiltBrush

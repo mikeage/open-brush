@@ -15,43 +15,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TiltBrush {
-public class PrefabLightmapData : MonoBehaviour {
-  [System.Serializable]
-  struct RendererInfo {
-    public Renderer renderer;
-    public int lightmapIndex;
-    public Vector4 lightmapOffsetScale;
-  }
+namespace TiltBrush
+{
+    public class PrefabLightmapData : MonoBehaviour
+    {
+        [System.Serializable]
+        struct RendererInfo
+        {
+            public Renderer renderer;
+            public int lightmapIndex;
+            public Vector4 lightmapOffsetScale;
+        }
 
-  [SerializeField] RendererInfo[] m_RendererInfo;
-  [SerializeField] Texture2D[] m_Lightmaps;
+        [SerializeField] RendererInfo[] m_RendererInfo;
+        [SerializeField] Texture2D[] m_Lightmaps;
 
-  void Awake() {
-    if (m_RendererInfo == null || m_RendererInfo.Length == 0) {
-      return;
-    }
+        void Awake()
+        {
+            if (m_RendererInfo == null || m_RendererInfo.Length == 0)
+            {
+                return;
+            }
 
-    var lightmaps = LightmapSettings.lightmaps;
-    var combinedLightmaps = new LightmapData[lightmaps.Length + m_Lightmaps.Length];
+            var lightmaps = LightmapSettings.lightmaps;
+            var combinedLightmaps = new LightmapData[lightmaps.Length + m_Lightmaps.Length];
 
-    lightmaps.CopyTo(combinedLightmaps, 0);
-    for (int i = 0; i < m_Lightmaps.Length; i++) {
-      combinedLightmaps[i + lightmaps.Length] = new LightmapData();
-      combinedLightmaps[i + lightmaps.Length].lightmapColor = m_Lightmaps[i];
-    }
+            lightmaps.CopyTo(combinedLightmaps, 0);
+            for (int i = 0; i < m_Lightmaps.Length; i++)
+            {
+                combinedLightmaps[i + lightmaps.Length] = new LightmapData();
+                combinedLightmaps[i + lightmaps.Length].lightmapColor = m_Lightmaps[i];
+            }
 
-    ApplyRendererInfo(m_RendererInfo, lightmaps.Length);
-    LightmapSettings.lightmaps = combinedLightmaps;
-  }
+            ApplyRendererInfo(m_RendererInfo, lightmaps.Length);
+            LightmapSettings.lightmaps = combinedLightmaps;
+        }
 
-  static void ApplyRendererInfo(RendererInfo[] infos, int lightmapOffsetIndex) {
-    for (int i = 0; i < infos.Length; i++) {
-      var info = infos[i];
-      info.renderer.lightmapIndex = info.lightmapIndex + lightmapOffsetIndex;
-      info.renderer.lightmapScaleOffset = info.lightmapOffsetScale;
-    }
-  }
+        static void ApplyRendererInfo(RendererInfo[] infos, int lightmapOffsetIndex)
+        {
+            for (int i = 0; i < infos.Length; i++)
+            {
+                var info = infos[i];
+                info.renderer.lightmapIndex = info.lightmapIndex + lightmapOffsetIndex;
+                info.renderer.lightmapScaleOffset = info.lightmapOffsetScale;
+            }
+        }
 
 #if UNITY_EDITOR
   [UnityEditor.MenuItem("Assets/Bake Prefab Lightmaps")]
@@ -104,5 +112,5 @@ public class PrefabLightmapData : MonoBehaviour {
     }
   }
 #endif
-}
+    }
 }  // namespace TiltBrush
