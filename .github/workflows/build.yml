@@ -452,6 +452,11 @@ jobs:
           androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS || 'FakeKey' }}
         continue-on-error: true
 
+      - name: git diff
+        run: |
+          git diff || true
+          cat Packages/packages-lock.json
+
       - name: Check build state
         if: ${{ steps.unity_builder.outputs.engineExitCode != 0 }}  # not always() because if we cancel the job, this shouldn't run
         run: |
