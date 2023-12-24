@@ -417,6 +417,13 @@ jobs:
           androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME || 'openbrush-non-official' }}
           androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS || 'FakeKey' }}
 
+      - name: Create DMG (OSX only)
+        if: matrix.targetPlatform == 'StandaloneOSX'
+        run: |
+          find build/${{ matrix.vrsdk }}/
+          npx create-dmg build/${{ matrix.vrsdk }}/${{ matrix.targetPlatform }}
+          find build/ -iname '*.dmg'
+
       - name: Prepare for packaging (permissions and compression, OSX only)
         if: matrix.targetPlatform == 'StandaloneOSX'
         run: |
@@ -424,6 +431,13 @@ jobs:
           tar -c -v -z -f OpenBrush.tgz -C build/${{ matrix.vrsdk }} ${{ matrix.targetPlatform}}
           rm -rf build/${{ matrix.vrsdk }}/*
           mv OpenBrush.tgz build/${{ matrix.vrsdk }}/
+      - name: Upload unsigned dmg
+        if: matrix.targetPlatform == 'StandaloneOSX'
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned DMG
+          path: |
+            build/${{ matrix.vrsdk }}/*dmg
 
       - name: Upload build/
         uses: actions/upload-artifact@v4
@@ -481,6 +495,37 @@ jobs:
           path: Library
           # Some platforms share a cache; it's not a 1:1 mapping of either targetPlatform or vrsdk, so we have a distinct variable for which cache to use
           key: Library_${{ matrix.cache }}_${{ env.UNITY_VERSION }}
+
+  notarize:
+    name: Notarize DMG
+    needs: [configuration, build]
+    if: matrix.targetPlatform == 'StandaloneOSX'
+    runs-on: macos-latest  # the ovr-platform-util tool is only available for Mac and Windows
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Unsigned DMG
+          path: dist/
+
+      - name: Notarize
+        run: |
+          find dist/
+
+          xcrun notarytool submit \
+          --team-id 'TODO' \
+          --apple-id 'TODO' \
+          --password "TODO" \
+          --wait \
+          dist/foo.dmg
+
+          xcrun stapler staple dist/foo.dmg
+      - name: Upload notarized dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mac OS DMG
+          path: |
+            dist/foo.dmg
 
   release:
     name: Create Github Release
