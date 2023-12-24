@@ -499,7 +499,6 @@ jobs:
   notarize:
     name: Notarize DMG
     needs: [configuration, build]
-    if: matrix.targetPlatform == 'StandaloneOSX'
     runs-on: macos-latest  # the ovr-platform-util tool is only available for Mac and Windows
     steps:
       - name: Download Build Artifacts
