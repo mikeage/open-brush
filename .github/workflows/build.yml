@@ -528,7 +528,7 @@ jobs:
 
   release:
     name: Create Github Release
-    needs: [configuration, build]
+    needs: [configuration, build, notarize]
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'push' &&
@@ -705,7 +705,7 @@ jobs:
 
   publish_steam:
     name: Publish Steam Release
-    needs: [configuration, build]
+    needs: [configuration, build, notarize]
     if: |
       github.event_name == 'push' &&
       github.repository == 'icosa-foundation/open-brush' &&
