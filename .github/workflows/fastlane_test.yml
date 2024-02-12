@@ -1,0 +1,22 @@
+---
+name: Fastlane tests
+on:
+  workflow_dispatch:
+
+jobs:
+  fastlane:
+    name: Test fastlane
+    runs-on: macos-latest
+    steps:
+      # Request manual activation file
+      - name: Install FL
+        run: |
+          true
+      - name: match
+        with:
+          MATCH_REPOSITORY: ${{ secrets.MATCH_REPOSITORY }}
+          MATCH_DEPLOY_KEY: ${{ secrets.MATCH_DEPLOY_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+          fastlane match development --readonly
+          find ~ -mmin -5
