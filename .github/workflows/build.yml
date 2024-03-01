@@ -1204,7 +1204,11 @@ jobs:
           name: iOS Zapbox
           path: build
 
-      - name: Fix File Permissions and Run fastlane
+      - name: Fix File Permissions
+        run: |
+          find ./build -type f -name "**.sh" -exec chmod +x {} \;
+
+      - name: Build and Release ipa
         env:
           APPLE_CONNECT_EMAIL: ${{ secrets.APPLE_CONNECT_EMAIL }}
           APPLE_DEVELOPER_EMAIL: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
@@ -1227,6 +1231,4 @@ jobs:
           export FILENAME=$(basename $(readlink -f build/iOS/OpenBrush*))
           export IOS_BUILD_PATH=$(pwd)/build/iOS/${FILENAME}
 
-          find $IOS_BUILD_PATH -type f -name "**.sh" -exec chmod +x {} \;
-          bundle install
           bundle exec fastlane ios ${FASTLANE_LANE}
