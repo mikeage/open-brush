@@ -1193,7 +1193,12 @@ jobs:
             Gemfile.lock
             fastlane
 
-      - name: Download iOS Artifact
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
           name: iOS Zapbox
