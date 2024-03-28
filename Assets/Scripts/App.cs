@@ -1725,7 +1725,7 @@ namespace TiltBrush
 
                 string text;
 
-                text = File.ReadAllText(Resources.Load<TextAsset>(kDefaultConfigPath).text, System.Text.Encoding.UTF8);
+                text = Resources.Load<TextAsset>(kDefaultConfigPath).text;
                 string warning;
                 UserConfig_tmp = DeserializeObjectWithWarning<UserConfig>(text, out warning);
 #if UNITY_OSX || UNITY_LINUX
