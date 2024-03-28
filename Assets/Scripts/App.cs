@@ -1719,7 +1719,20 @@ namespace TiltBrush
             string configPath = Path.Combine(tiltBrushFolder, kConfigFileName);
             if (!File.Exists(configPath))
             {
-                FileUtils.WriteTextFromResources(kDefaultConfigPath, configPath);
+                // Copy the default configuration, but with monoscopic mode enabled on OSX/Linux.
+                UserConfig UserConfig_tmp;
+                UserConfig_tmp = new UserConfig();
+
+                string text;
+
+                text = File.ReadAllText(Resources.Load<TextAsset>(kDefaultConfigPath).text, System.Text.Encoding.UTF8);
+                string warning;
+                UserConfig_tmp = DeserializeObjectWithWarning<UserConfig>(text, out warning);
+#if UNITY_OSX || UNITY_LINUX
+                UserConfig_tmp.Flags.EnableMonoscopicMode = true;
+#endif
+                text = JsonConvert.SerializeObject(UserConfig_tmp, Formatting.Indented);
+                File.WriteAllText(configPath, text, System.Text.Encoding.UTF8);
             }
         }
 
