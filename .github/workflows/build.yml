@@ -569,10 +569,6 @@ jobs:
   signmacos:
     name: Sign the MacOS .app
     needs: [build]
-    if: |
-      github.event_name == 'push' &&
-      github.repository == 'icosa-foundation/open-brush' &&
-      (github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/v'))
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -647,10 +643,6 @@ jobs:
   createdmg:
     name: Create and Notarize DMG
     needs: [signmacos]
-    if: |
-      github.event_name == 'push' &&
-      github.repository == 'icosa-foundation/open-brush' &&
-      (github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/v'))
 
     runs-on: macos-latest
     steps:
