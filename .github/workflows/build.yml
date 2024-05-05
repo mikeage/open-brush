@@ -23,7 +23,8 @@ jobs:
         (
         github.ref == 'refs/heads/main' ||
         contains(github.ref, 'refs/tags/v') ||
-        contains(github.event.head_commit.message, '[CI BUILD]')
+        contains(github.event.head_commit.message, '[CI BUILD]') ||
+        contains(github.event.head_commit.message, '[CI BUILD DEV]')
         )
       )
     name: Configure Build Parameters
@@ -43,6 +44,7 @@ jobs:
       fastlanelane: ${{ steps.version.outputs.fastlanelane}}
       uid: ${{ steps.github.outputs.uid }}
       gid: ${{ steps.github.outputs.gid }}
+      title: ${{ steps.title.outputs.title }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -155,8 +157,15 @@ jobs:
           fi
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
+
+      - name: Calculate title
+        id: title
+        if: ${{ contains(github.event.head_commit.message, '[CI BUILD DEV]') }}
+        run: |
+          echo "title=Development" >> $GITHUB_OUTPUT
+
   build:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.name }} ${{ needs.configuration.outputs.title }}
     needs: configuration
     runs-on: ubuntu-latest
     strategy:
@@ -401,6 +410,11 @@ jobs:
         run: |
           echo "stamp=-btb-stamp ${{needs.configuration.outputs.stamp}}" >> $GITHUB_ENV
 
+      - name: Enable Development Mode
+        if: ${{ contains(github.event.head_commit.message, '[CI BUILD DEV]') }}
+        run: |
+          echo "btbbopts=-btb-bopt Development" >> $GITHUB_ENV
+
       - name: Update version
         env:
           VERSION: ${{ needs.configuration.outputs.version}}
@@ -445,7 +459,7 @@ jobs:
           allowDirtyBuild: true  # Because of the OVR Update, the build tree might be dirty
           unityVersion: ${{ env.UNITY_VERSION }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: -btb-target ${{ matrix.targetPlatform }} -btb-display ${{ matrix.vrsdk }} -btb-out /github/workspace/build/${{ matrix.vrsdk }}/${{ matrix.targetPlatform }}/${{ env.filename }} ${{ needs.configuration.outputs.description}} ${{ env.stamp }} ${{ matrix.extraoptions }}
+          customParameters: -btb-target ${{ matrix.targetPlatform }} -btb-display ${{ matrix.vrsdk }} -btb-out /github/workspace/build/${{ matrix.vrsdk }}/${{ matrix.targetPlatform }}/${{ env.filename }} ${{ needs.configuration.outputs.description}} ${{ env.stamp }} ${{ env.btbbopts }} ${{ matrix.extraoptions }}
           versioning: Custom
           androidVersionCode: "${{ needs.configuration.outputs.androidVersionCode }}${{ matrix.versionSuffix }}"
           version: ${{ needs.configuration.outputs.version }}
@@ -485,7 +499,7 @@ jobs:
           allowDirtyBuild: true  # Because of the OVR Update, the build tree might be dirty
           unityVersion: ${{ env.UNITY_VERSION }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: -btb-target ${{ matrix.targetPlatform }} -btb-display ${{ matrix.vrsdk }} -btb-out /github/workspace/build/${{ matrix.vrsdk }}/${{ matrix.targetPlatform }}/${{ env.filename }} ${{ needs.configuration.outputs.description}} ${{ env.stamp }} ${{ matrix.extraoptions }}
+          customParameters: -btb-target ${{ matrix.targetPlatform }} -btb-display ${{ matrix.vrsdk }} -btb-out /github/workspace/build/${{ matrix.vrsdk }}/${{ matrix.targetPlatform }}/${{ env.filename }} ${{ needs.configuration.outputs.description}} ${{ env.stamp }} ${{ env.btbbopts }} ${{ matrix.extraoptions }}
           versioning: Custom
           androidVersionCode: "${{ needs.configuration.outputs.androidVersionCode }}${{ matrix.versionSuffix }}"
           version: ${{ needs.configuration.outputs.version }}
