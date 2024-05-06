@@ -23,8 +23,7 @@ jobs:
         (
         github.ref == 'refs/heads/main' ||
         contains(github.ref, 'refs/tags/v') ||
-        contains(github.event.head_commit.message, '[CI BUILD]') ||
-        contains(github.event.head_commit.message, '[CI BUILD DEV]')
+        contains(github.event.head_commit.message, '[CI BUILD]')
         )
       )
     name: Configure Build Parameters
@@ -44,7 +43,7 @@ jobs:
       fastlanelane: ${{ steps.version.outputs.fastlanelane}}
       uid: ${{ steps.github.outputs.uid }}
       gid: ${{ steps.github.outputs.gid }}
-      title: ${{ steps.title.outputs.title }}
+      flavors: ${{ steps.flavors.outputs.flavors }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -158,19 +157,24 @@ jobs:
           echo "uid=$(id -u)" >> $GITHUB_OUTPUT
           echo "gid=$(id -g)" >> $GITHUB_OUTPUT
 
-      - name: Calculate title
-        id: title
-        if: ${{ contains(github.event.head_commit.message, '[CI BUILD DEV]') }}
+      - name: Determine whether to build Development builds or not
         run: |
-          echo "title=Development" >> $GITHUB_OUTPUT
+          set -x
+          if [[ ${{ contains(github.event.head_commit.message, '[CI BUILD DEV]') }} == true ]]
+          then
+            echo 'flavors=[{"development": true, "title":"Development"},{"development": false}]' >> $GITHUB_OUTPUT
+          else
+            echo 'flavors=[{"development": false}]' >> $GITHUB_OUTPUT
+          fi
 
   build:
-    name: ${{ matrix.name }} ${{ needs.configuration.outputs.title }}
+    name: ${{ matrix.name }} ${{ matrix.flavors.title }}
     needs: configuration
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        flavors: ${{ fromJson(needs.configuration.outputs.flavors) }}
         # We don't use an actual matrix because there's more exceptions than actual cases!
         include:
           - name: Windows OpenXR
@@ -411,7 +415,7 @@ jobs:
           echo "stamp=-btb-stamp ${{needs.configuration.outputs.stamp}}" >> $GITHUB_ENV
 
       - name: Enable Development Mode
-        if: ${{ contains(github.event.head_commit.message, '[CI BUILD DEV]') }}
+        if: ${{ matrix.flavors.development == true }}
         run: |
           echo "btbbopts=-btb-bopt Development" >> $GITHUB_ENV
 
