@@ -19,13 +19,9 @@ jobs:
       - uses: actions/setup-dotnet@v4.0.0
         with:
           dotnet-version: '8.0.x'
-      - name: test
-        uses: Wandalen/wretry.action@master
+      - uses: Wandalen/wretry.action@master
         with:
           action: pre-commit/action@v3.0.1
-          with: |
-            option1: value
-            option2: value
       - name: Run pre-commit with retries
         uses: Wandalen/wretry.action@v3
         with:
