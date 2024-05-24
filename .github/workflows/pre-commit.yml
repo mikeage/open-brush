@@ -22,7 +22,7 @@ jobs:
       - name: test
         uses: Wandalen/wretry.action@master
         with:
-          action: owner/action-repo@version
+          action: game-ci/unity-builder@v4
           with: |
             option1: value
             option2: value
@@ -30,3 +30,6 @@ jobs:
         uses: Wandalen/wretry.action@v3
         with:
           action: pre-commit/action@v3.0.1
+          with: |
+            option1: value
+            option2: value
