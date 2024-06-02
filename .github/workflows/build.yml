@@ -314,9 +314,9 @@ jobs:
       - name: Install Pico unity package
         if: matrix.vrsdk == 'Pico'
         run: |
-          # version 2.1.1
+          # version 2.5.0
           mkdir Packages/com.unity.xr.picoxr
-          wget -q https://sdk.picovr.com/developer-platform/sdk/PICO%20Unity%20Integration%20SDK%20v211.zip -O package.zip
+          wget -q https://sdk.picovr.com/developer-platform/sdk/PICO%20Unity%20Integration%20SDK_250.zip -O package.zip
           unzip package.zip -d Packages/com.unity.xr.picoxr
           # Pico has a GUID conflict because they copied code from Oculus. Delete the offending .meta file from our mutable Pico SDK.
           rm Packages/com.unity.xr.picoxr/Platform/Scripts/Models/Common.cs.meta
