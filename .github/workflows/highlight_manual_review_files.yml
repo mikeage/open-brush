@@ -34,6 +34,7 @@ jobs:
         uses: peter-evans/find-comment@v3
         id: find_comment
         with:
+          token: ${{ github.token }}
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
           body-includes: ':warning: **Heads-up:**'
