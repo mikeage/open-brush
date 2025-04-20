@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   notify:
+    name: Check for changes to be highlighted
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,25 +30,34 @@ jobs:
             projectsettings:
               - 'ProjectSettings/**'
 
-      - name: Check for packages changes
-        if: steps.filter.outputs.packages == 'true'
-        uses: peter-evans/create-or-update-comment@v4
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: find_comment
         with:
-          token: ${{ github.token }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            :warning: **Heads‑up:**
-            The package file(s) were changed. Please make sure that both files are in sync, and that this change was deliberate.
+          comment-author: 'github-actions[bot]'
+          body-includes: ':warning: **Heads-up:**'
 
-      - name: Check for Project Settings changes
-        if: steps.filter.outputs.projectsettings == 'true'
+      - name: Post a comment
+        if: steps.filter.outputs.packages == 'true' || steps.filter.outputs.projectsettings == 'true'
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ github.token }}
+          edit-mode: replace
           issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
           body: |
             :warning: **Heads‑up:**
-            The following files in ProjectSettings/ were changed:
-            ```text
-            ${{ join(fromJson(steps.changes.outputs.projectsettings_files), '\n') }}
-            ```
+
+            ${{ (
+              steps.filter.outputs.packages == 'true' &&
+              'The package manifest file(s) were changed. Please make sure that this was deliberate'
+            ) || '' }}
+
+            ${{ (
+              steps.filter.outputs.projectsettings == 'true' &&
+              format(
+                'The following files from ProjectSettings were changed:\n```text\n{0}\n```',
+                join(fromJson(steps.changes.outputs.projectsettings_files), '\n')
+              )
+            ) || '' }}
