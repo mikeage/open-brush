@@ -59,7 +59,7 @@ jobs:
               steps.filter.outputs.projectsettings == 'true' &&
               format(
                 'The following files from ProjectSettings were changed:\n```text\n{0}\n```',
-                join(fromJson(steps.changes.outputs.projectsettings_files), '\n')
+                join(fromJson(steps.changes.outputs.projectsettings_files || '[]'), '\n')
               )
             ) || '' }}
 
