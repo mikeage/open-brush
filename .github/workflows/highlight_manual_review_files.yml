@@ -40,21 +40,31 @@ jobs:
           body-includes: 'Review: flagged files'
 
       - name: Post a comment
-        if: steps.filter.outputs.packages == 'true' || steps.filter.outputs.projectsettings == 'true'
+        if: |
+          steps.filter.outputs.packages == 'true' ||
+          steps.filter.outputs.projectsettings == 'true'
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ github.token }}
-          edit-mode: replace
           issue-number: ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          edit-mode: replace
           body: |
             :warning: **Heads‑up:**
 
-            ${{ steps.filter.outputs.packages == 'true' && "The package manifest file(s) were changed. Please make sure that this was deliberate" || "" }}
+            ${{ (
+              steps.filter.outputs.packages == 'true' &&
+              'The package manifest file(s) were changed. Please make sure that this was deliberate, and that both files are in sync.'
+            ) || '' }}
 
-            ${{ steps.filter.outputs.projectsettings == 'true' && format(
-                 "The following files from ProjectSettings were changed:\n```text\n{0}\n```",
-                 join(fromJson(steps.changes.outputs.projectsettings_files || "[]"), "\n")
-               ) || "" }}
+            ${{ (
+              steps.filter.outputs.projectsettings == 'true' &&
+              format(
+                'The following files from ProjectSettings were changed:\n```text\n{0}\n```',
+                join(
+                  fromJson(steps.filter.outputs.projectsettings_files || '[]'),
+                  '\n'
+                )
+              )
+            ) || '' }}
 
             (Review: flagged files)
