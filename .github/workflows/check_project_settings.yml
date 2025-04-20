@@ -1,0 +1,52 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Highlight ProjectSettings changes
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'Packages/*.json'
+      - 'ProjectSettings/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          list-files: json
+          filters: |
+            packages:
+              - 'Packages/*.json'
+            projectsettings:
+              - 'ProjectSettings/**'
+
+      - name: Check for packages changes
+        if: steps.filter.outputs.packages == 'true'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ github.token }}
+          body: |
+            :warning: **Heads‑up:**
+            The package file(s) were changed. Please make sure that both files are in sync, and that this change was deliberate.
+
+      - name: Check for Project Settings changes
+        if: steps.filter.outputs.projectsettings == 'true'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ github.token }}
+          # Leave a comment that converts the JSON to a markdown list:
+          body: |
+            :warning: **Heads‑up:**
+            The following files in ProjectSettings/ were changed:
+            ```text
+            ${{ join(fromJson(steps.changes.outputs.projectsettings_files), '\n') }}
+            ```
