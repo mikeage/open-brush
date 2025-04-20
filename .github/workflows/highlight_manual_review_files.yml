@@ -1,7 +1,7 @@
 ---
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Highlight ProjectSettings changes
+name: Highlight files requiring manual review
 on:  # yamllint disable-line rule:truthy
   pull_request_target:
     types: [opened, synchronize, reopened]
