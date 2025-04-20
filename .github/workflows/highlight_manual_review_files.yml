@@ -51,7 +51,11 @@ jobs:
           body: |
             :warning: **Heads‑up:**
 
-            ${{ steps.filter.outputs.packages == 'true' && 'The package manifest file(s) were changed. Please make sure that this was deliberate' || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && 'The following package files were changed:' || '' }}
+
+            ${{ steps.filter.outputs.packages == 'true' && '```text' || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && join(fromJson(steps.filter.outputs.packages_files || '[]'), '\n') || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && '```' || '' }}
 
             ${{ steps.filter.outputs.projectsettings == 'true' && 'The following files from ProjectSettings were changed:' || '' }}
 
