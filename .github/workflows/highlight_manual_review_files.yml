@@ -37,7 +37,7 @@ jobs:
           token: ${{ github.token }}
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: ':warning: **Heads-up:**'
+          body-includes: 'Review: flagged files'
 
       - name: Post a comment
         if: steps.filter.outputs.packages == 'true' || steps.filter.outputs.projectsettings == 'true'
@@ -62,3 +62,5 @@ jobs:
                 join(fromJson(steps.changes.outputs.projectsettings_files), '\n')
               )
             ) || '' }}
+
+            (Review: flagged files)
