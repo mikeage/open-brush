@@ -12,8 +12,6 @@ jobs:
   test-newlines:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -23,10 +21,8 @@ jobs:
               - 'Packages/*.json'
             projectsettings:
               - 'ProjectSettings/**'
-          json: true
 
       - name: Create comment with file list
-        if: steps.filter.outputs.any_changed == 'true'
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
