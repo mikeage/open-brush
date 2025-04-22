@@ -1,0 +1,45 @@
+---
+name: Test Comment Newlines
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test-newlines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          list-files: json
+          filters: |
+            packages:
+              - 'Packages/*.json'
+            projectsettings:
+              - 'ProjectSettings/**'
+          json: true
+
+      - name: Create comment with file list
+        if: steps.filter.outputs.any_changed == 'true'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ### Test Comment with Newlines
+
+            Changed markdown files:
+            ${{ steps.filter.outputs.packages == 'true' && '```text' || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && join(fromJson(steps.filter.outputs.packages_files || '[]'), '%0A') || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && '```' || '' }}
+
+            ${{ steps.filter.outputs.packages == 'true' && '```text' || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && join(fromJson(steps.filter.outputs.packages_files || '[]'), '
+            ') || '' }}
+            ${{ steps.filter.outputs.packages == 'true' && '```' || '' }}
+
