@@ -519,10 +519,11 @@ jobs:
 
       - name: Add swap for Unity 6
         run: |
-          sudo fallocate -l 12G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          free -h
+          sudo fallocate -l 12G /swapfile2
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
           sudo sysctl -w vm.swappiness=10
           free -h
 
