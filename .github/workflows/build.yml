@@ -558,6 +558,14 @@ jobs:
             androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME || 'openbrush-non-official' }}
             androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS || 'FakeKey' }}
 
+      - name: Diagnose Unity termination
+        if: always()
+        shell: bash
+        run: |
+          echo "[CACHE-DIAG] Kernel memory-kill reports"
+          sudo dmesg --ctime > "$RUNNER_TEMP/unity-kernel.log"
+          grep -Ei \'out of memory|oom-kill|killed process|memory cgroup' \"$RUNNER_TEMP/unity-kernel.log" \|| echo "[CACHE-DIAG] No kernel OOM reports found"
+
       - name: Prepare for packaging (permissions and compression, OSX only)
         if: matrix.targetPlatform == 'StandaloneOSX'
         run: |
