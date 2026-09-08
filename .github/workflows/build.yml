@@ -405,7 +405,6 @@ jobs:
 
       - name: Restore Library/
         id: cache_library
-        if: false
         uses: actions/cache/restore@v6
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 10
@@ -413,6 +412,10 @@ jobs:
           path: Library
           # Some platforms share a cache; it's not a 1:1 mapping of either targetPlatform or vrsdk, so we have a distinct variable for which cache to use
           key: Library_${{ matrix.cache }}_${{ env.UNITY_VERSION }}_${{ env.PHOTON_SDK_VERSION }}
+
+      - name: Remove Library/Bee
+        run: |
+          rm -rf Library/Bee
 
       - name: Restore Library/PackageCache
         id: cache_packagecache
