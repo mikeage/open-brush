@@ -413,9 +413,8 @@ jobs:
           # Some platforms share a cache; it's not a 1:1 mapping of either targetPlatform or vrsdk, so we have a distinct variable for which cache to use
           key: Library_${{ matrix.cache }}_${{ env.UNITY_VERSION }}_${{ env.PHOTON_SDK_VERSION }}
 
-      - name: Remove Library/Bee
-        run: |
-          rm -rf Library/Bee
+      - name: Remove Library/Bee and ScriptAssemblies
+        run: rm -rf Library/Bee Library/ScriptAssemblies
 
       - name: Restore Library/PackageCache
         id: cache_packagecache
